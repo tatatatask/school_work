@@ -7,10 +7,14 @@
 	let scene; // シーン
 	let camera; // カメラ
 	let renderer; // レンダラ
+
 	let geometry; // ジオメトリ
 	let geometryEdge; // ジオメトリ エッジ
+	let geometryTorusEdge;
+
 	let material; // マテリアル
 	let materialEdge; // マテリアル エッジ
+
 	let controls; // カメラコントロール
 	let axesHelper; // 軸ヘルパーメッシュ
 	let directionalLight; // ディレクショナル・ライト（平行光源）
@@ -202,6 +206,7 @@
 		geometryEdge = new THREE.EdgesGeometry(geometry);
 		// エッジ用トーラスジオメトリ
 		geometryTorusEdge = new THREE.EdgesGeometry(geometryTorus);
+
 		// エッジ用マテリアル
 		materialEdge = new THREE.LineBasicMaterial({color: color});
 
