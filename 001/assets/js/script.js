@@ -21,7 +21,7 @@
 
 	// datguiパラメータ
 	const ___param = {
-		color: 0x25b25,
+		color: 0xffffff,
 		size: 1.0,
 		count_x: 10,
 		count_y: 10,
@@ -30,36 +30,55 @@
 		changeObject: false,
 	};
 
+	// カメラに関するパラメータ
+	const CAMERA_PARAM = {
+		fovy: 60,
+		aspect: window.innerWidth / window.innerHeight,
+		near: 0.1,
+		far: 60.0,
+		x: 0.0,
+		y: 0.0,
+		z: 10.0,
+		lookAt: new THREE.Vector3(0.0, 0.0, 0.0),
+	};
+	// レンダラに関するパラメータ
+	const RENDERER_PARAM = {
+		clearColor: 0x666666,
+		width: window.innerWidth,
+		height: window.innerHeight,
+	};
+	// マテリアルのパラメータ
+	let MATERIAL_PARAM = {
+		color: 0xffffff,
+		specular: 0xffffff,
+	};
+	// ライトに関するパラメータの定義
+	const DIRECTIONAL_LIGHT_PARAM = {
+		color: 0xffffff,
+		intensity: 1.0,
+		x: 1.0,
+		y: 1.0,
+		z: 1.0,
+	};
+	// アンビエントライトに関するパラメータの定義
+	const AMBIENT_LIGHT_PARAM = {
+		color: 0xffffff,
+		intensity: 0.2,
+	};
+
 	// DOM LOADED
 	window.addEventListener(
 		"DOMContentLoaded",
 		() => {
-			// datgui
-			const gui = new dat.GUI();
-			gui.addColor(___param, "color").onFinishChange(() => {
-				reRender();
-			});
-			gui.add(___param, "size", 0.1, 3.0, 0.1).onFinishChange(() => {
-				reRender();
-			});
-			gui.add(___param, "count_x", 1, 100, 1).onFinishChange(() => {
-				reRender();
-			});
-			gui.add(___param, "count_y", 1, 100, 1).onFinishChange(() => {
-				reRender();
-			});
-			gui.add(___param, "changeGeometry").onFinishChange(() => {
-				changeGeometry();
-			});
-			gui.add(___param, "changeMaterial").onFinishChange(() => {
-				changeMaterial();
-			});
-			gui.add(___param, "changeObject").onFinishChange(() => {
-				reRender();
-			});
+			// dat.GUI設置
+			datGUI();
 
 			// 初期化処理
 			init();
+
+			// 描画処理
+			run = true;
+			render();
 
 			// キーダウンイベントの定義
 			window.addEventListener(
@@ -95,49 +114,28 @@
 				},
 				false,
 			);
-
-			// 描画処理
-			run = true;
-			render();
 		},
 		false,
 	);
 
-	// カメラに関するパラメータ
-	const CAMERA_PARAM = {
-		fovy: 60,
-		aspect: window.innerWidth / window.innerHeight,
-		near: 0.1,
-		far: 60.0,
-		x: 0.0,
-		y: 0.0,
-		z: 10.0,
-		lookAt: new THREE.Vector3(0.0, 0.0, 0.0),
-	};
-	// レンダラに関するパラメータ
-	const RENDERER_PARAM = {
-		clearColor: 0x666666,
-		width: window.innerWidth,
-		height: window.innerHeight,
-	};
-	// マテリアルのパラメータ
-	let MATERIAL_PARAM = {
-		color: 0x25b25,
-		specular: 0xffffff,
-	};
-	// ライトに関するパラメータの定義
-	const DIRECTIONAL_LIGHT_PARAM = {
-		color: 0xffffff,
-		intensity: 1.0,
-		x: 1.0,
-		y: 1.0,
-		z: 1.0,
-	};
-	// アンビエントライトに関するパラメータの定義
-	const AMBIENT_LIGHT_PARAM = {
-		color: 0xffffff,
-		intensity: 0.2,
-	};
+	// フレームごとの処理
+	function render() {
+		// 再帰呼び出し
+		if (run === true) {
+			requestAnimationFrame(render);
+		}
+
+		// スペースキーが押されている場合メッシュを回転させる
+		if (isDown === true) {
+			objGroup.children.forEach((obj) => {
+				obj.rotation.y += 0.02;
+				obj.rotation.z += 0.02;
+			});
+		}
+
+		// 描画
+		renderer.render(scene, camera);
+	}
 
 	// 初期化
 	function init() {
@@ -179,25 +177,6 @@
 
 		// シーンに追加
 		scene.add(objGroup);
-	}
-
-	// フレームごとの処理
-	function render() {
-		// 再帰呼び出し
-		if (run === true) {
-			requestAnimationFrame(render);
-		}
-
-		// スペースキーが押されている場合メッシュを回転させる
-		if (isDown === true) {
-			objGroup.children.forEach((obj) => {
-				obj.rotation.y += 0.02;
-				obj.rotation.z += 0.02;
-			});
-		}
-
-		// 描画
-		renderer.render(scene, camera);
 	}
 
 	// メッシュグループ生成
@@ -254,6 +233,29 @@
 		return group;
 	}
 
+	// 回転を保持して再配置
+	function change() {
+		const currentRotate = {
+			x: objGroup.children[0].rotation.x,
+			y: objGroup.children[0].rotation.y,
+			z: objGroup.children[0].rotation.z,
+		};
+		scene.remove(objGroup);
+
+		// メッシュ生成
+		objGroup = createObject();
+		objGroup.children.forEach((obj) => {
+			obj.rotation.x = currentRotate.x;
+			obj.rotation.y = currentRotate.y;
+			obj.rotation.z = currentRotate.z;
+		});
+		changeGeometry();
+		changeMaterial();
+
+		// シーンに追加
+		scene.add(objGroup);
+	}
+
 	// ジオメトリ変更
 	function changeGeometry() {
 		let afterChange;
@@ -287,32 +289,34 @@
 		} else {
 			afterChange = materialEdge;
 		}
-
 		objGroup.children.forEach((obj) => {
 			obj.material = afterChange;
 		});
 	}
 
-	// 回転を保持して再配置
-	function reRender() {
-		const currentRotate = {
-			x: objGroup.children[0].rotation.x,
-			y: objGroup.children[0].rotation.y,
-			z: objGroup.children[0].rotation.z,
-		};
-		scene.remove(objGroup);
-
-		// メッシュ生成
-		objGroup = createObject();
-		objGroup.children.forEach((obj) => {
-			obj.rotation.x = currentRotate.x;
-			obj.rotation.y = currentRotate.y;
-			obj.rotation.z = currentRotate.z;
+	// datgui
+	function datGUI() {
+		const gui = new dat.GUI();
+		gui.addColor(___param, "color").onFinishChange(() => {
+			change();
 		});
-		changeGeometry();
-		changeMaterial();
-
-		// シーンに追加
-		scene.add(objGroup);
+		gui.add(___param, "size", 0.1, 3.0, 0.1).onFinishChange(() => {
+			change();
+		});
+		gui.add(___param, "count_x", 1, 100, 1).onFinishChange(() => {
+			change();
+		});
+		gui.add(___param, "count_y", 1, 100, 1).onFinishChange(() => {
+			change();
+		});
+		gui.add(___param, "changeGeometry").onFinishChange(() => {
+			changeGeometry();
+		});
+		gui.add(___param, "changeMaterial").onFinishChange(() => {
+			changeMaterial();
+		});
+		gui.add(___param, "changeObject").onFinishChange(() => {
+			change();
+		});
 	}
 })();
