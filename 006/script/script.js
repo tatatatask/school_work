@@ -23,9 +23,11 @@
         window.addEventListener('mousemove', (event) => {
             mouse[0] = event.clientX / window.innerWidth;
             mouse[1] = event.clientY / window.innerHeight;
+
             setupGeometry();
             setupLocation();
             render();
+
         }, false);
 
         let vs = null;
@@ -42,7 +44,6 @@
             // 頂点とロケーションのセットアップは先に行っておく
             setupGeometry();
             setupLocation();
-
             render();
         });
     }, false);
@@ -60,7 +61,7 @@
 		position = [0.0,0.0,0.0];
 		color = [0.0,0.0,0.0,0.0];
 		indices = [];
-		const point = Math.max(10,Math.floor(Math.round(mouse[0]*2*25) / 2) * 2);
+		const point = Math.max(10,Math.floor(Math.round(mouse[0] * 30) / 2) * 2);
 		const size = 0.5;
 		for (let i = 0; i < point; i++) {
 
@@ -84,9 +85,9 @@
 			color.push(
 				// r,g,b,a
 				Math.abs(Math.sin(i)),
-				1.0,
-				1.0,
-				0.5
+				0.3,
+				0.6,
+				1.0
 			);
 
 			//
