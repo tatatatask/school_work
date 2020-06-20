@@ -86,6 +86,21 @@
 				0.5
 			);
 
+			//
+			// index
+			//
+			// if(i < point / 2 ){
+			// 	if(i % 2 === 0){
+			// 		indices.push(
+			// 			i,
+			// 			Math.ceil(i+point/4),
+			// 			Math.ceil(i+point/4+point/4+1)
+			// 		);
+			// 		if(Math.ceil(i+point/4+point/4+1) >= point){
+			// 			indices[indices.length-1] = 0;
+			// 		}
+			// 	}
+			// }
 		}
 
 		//

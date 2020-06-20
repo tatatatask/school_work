@@ -23,6 +23,9 @@
         window.addEventListener('mousemove', (event) => {
             mouse[0] = event.clientX / window.innerWidth;
             mouse[1] = event.clientY / window.innerHeight;
+            setupGeometry();
+            setupLocation();
+            render();
         }, false);
 
         let vs = null;
@@ -57,7 +60,7 @@
 		position = [0.0,0.0,0.0];
 		color = [0.0,0.0,0.0,0.0];
 		indices = [];
-		const point = 10;
+		const point = Math.max(10,Math.floor(Math.round(mouse[0]*2*25) / 2) * 2);
 		const size = 0.5;
 		for (let i = 0; i < point; i++) {
 
